@@ -20,11 +20,36 @@ class AuthController extends BaseController
 
         $user = User::where('email', $validated['email'])->first();
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        if (!$user) {
             activity()
                 ->causedByAnonymous()
                 ->withProperties(['email' => $validated['email'], 'ip' => $request->ip()])
-                ->log('Failed login attempt');
+                ->log('Failed login attempt - user not found');
+
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        if ($user->locked_until && $user->locked_until->isFuture()) {
+            return $this->errorResponse('Account temporarily locked due to multiple failed attempts', 423);
+        }
+
+        if (!Hash::check($validated['password'], $user->password)) {
+            $user->increment('failed_login_attempts');
+            
+            if ($user->failed_login_attempts >= 5) {
+                $user->update(['locked_until' => now()->addMinutes(15)]);
+                activity()
+                    ->causedBy($user)
+                    ->withProperties(['ip' => $request->ip(), 'attempts' => $user->failed_login_attempts])
+                    ->log('Account locked due to failed attempts');
+            }
+
+            activity()
+                ->causedByAnonymous()
+                ->withProperties(['email' => $validated['email'], 'ip' => $request->ip(), 'attempts' => $user->failed_login_attempts])
+                ->log('Failed login attempt - wrong password');
 
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
@@ -35,12 +60,22 @@ class AuthController extends BaseController
             return $this->errorResponse('Email not verified', 403);
         }
 
+        if (!$user->is_active) {
+            return $this->errorResponse('Account is deactivated', 403);
+        }
+
+        $user->update([
+            'failed_login_attempts' => 0,
+            'locked_until' => null,
+            'last_login_at' => now()
+        ]);
+
         $token = $user->createToken($validated['device_name'] ?? 'Desktop App')->plainTextToken;
 
         activity()
             ->causedBy($user)
-            ->withProperties(['device_name' => $validated['device_name'] ?? 'Desktop App'])
-            ->log('User logged in');
+            ->withProperties(['device_name' => $validated['device_name'] ?? 'Desktop App', 'ip' => $request->ip()])
+            ->log('User logged in successfully');
 
         return $this->successResponse([
             'user' => $user->load('roles', 'permissions'),

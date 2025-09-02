@@ -22,8 +22,8 @@ function createWindow() {
     });
 
     const startUrl = isDev 
-        ? 'http://localhost:8080' 
-        : `file://${path.join(__dirname, '../backend/public/index.html')}`;
+        ? 'http://127.0.0.1:8002' 
+        : `file://${path.join(__dirname, '../public/index.html')}`;
     
     mainWindow.loadURL(startUrl);
 
