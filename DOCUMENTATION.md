@@ -294,4 +294,51 @@ npm run build-linux  # Linux (.AppImage)
 
 ---
 
+## 🔧 Commands Utiles
+
+```bash
+# Développement
+composer dev              # Démarre tout
+php artisan serve         # Backend seulement
+npm run dev              # Frontend seulement
+
+# Production
+npm run build            # Build React
+php artisan optimize     # Cache Laravel
+
+# Desktop
+cd desktop && npm run electron-dev    # Mode dev
+cd desktop && npm run build          # Build production
+
+# Maintenance
+php artisan migrate       # Migrations DB
+php artisan db:seed      # Données test
+php artisan route:list   # Liste routes API
+```
+
+---
+
+## 📁 Structure Projet
+
+```
+laravel-desktop-app/
+├── app/                    # Backend Laravel
+│   ├── Http/Controllers/   # API Controllers
+│   ├── Models/            # Modèles Eloquent
+│   ├── Services/          # Logique métier
+│   └── Middleware/        # Sécurité & CORS
+├── resources/             # Frontend Assets
+│   ├── js/               # React Application
+│   ├── css/              # Bootstrap Styles
+│   └── views/            # Blade Templates
+├── desktop/              # Electron App
+│   ├── main.js           # Process principal
+│   └── preload.js        # Script sécurisé
+├── database/             # Migrations & Seeds
+├── config/               # Configuration Laravel
+└── docker/               # Infrastructure Dev
+```
+
+---
+
 *📧 Contact : eliote-geeks - https://github.com/eliote-geeks*
