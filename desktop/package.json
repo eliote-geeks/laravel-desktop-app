@@ -40,6 +40,6 @@
     }
   },
   "keywords": ["laravel", "electron", "desktop", "app"],
-  "author": "Laravel Desktop App",
+  "author": "eliote-geeks <https://github.com/eliote-geeks>",
   "license": "MIT"
 }

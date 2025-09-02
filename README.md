@@ -113,7 +113,7 @@ laravel-desktop-app/
 │   ├── preload.js       # Script preload
 │   └── assets/          # Ressources
 ├── docker/              # Configuration Docker
-└── .github/workflows/   # CI/CD
+└── .github/workflows/   # CI/CD GitHub
 ```
 
 ## 🚀 Déploiement
@@ -147,6 +147,10 @@ Le déploiement automatique est configuré avec GitHub Actions :
 - `make test` : Lance les tests
 - `make desktop-dev` : Application desktop en dev
 - `make clean` : Nettoie l'environnement
+
+## 👨‍💻 Auteur
+
+- **GitHub**: [eliote-geeks](https://github.com/eliote-geeks)
 
 ## 🤝 Contribution
 
